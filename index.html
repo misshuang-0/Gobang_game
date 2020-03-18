@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>五子棋</title>
+    <style>
+        #app canvas {
+            margin: 50px 0 0 50px;
+            box-shadow: 0 0 8px 2px rgba(0, 0, 0, .2);
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <canvas ref="myCanvas" width="640" height="640"></canvas>
+    </div>
+
+    <script src="./js/vue.js"></script>
+    <script>
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                canvas: {}, //画布
+                ctx: {}, //画笔
+            },
+            mounted() {
+                // 当页面挂载完毕，初始化界面
+                this.init();
+            },
+            methods: {
+                //初始化
+                init() {
+                    // 获取画布
+                    this.canvas = this.$refs.myCanvas;
+                    // 获取画笔
+                    this.ctx = this.canvas.getContext('2d');
+                    // 棋盘初始化
+                    this.drawCheckerboard();
+                },
+                // 绘制棋盘
+                drawCheckerboard() {
+                    this.ctx.strokeStyle = '#ddd';
+                    for (var i = 0; i < 30; i++) {
+                        // 横线
+                        this.ctx.moveTo(20 + i * 30, 20);
+                        this.ctx.lineTo(20 + i * 30, 620);
+                        this.ctx.stroke();
+                        // 竖线
+                        this.ctx.moveTo(20, 20 + i * 30);
+                        this.ctx.lineTo(620, 20 + i * 30);
+                        this.ctx.stroke();
+                    }
+                }
+            }
+
+        })
+    </script>
+</body>
+
+</html>
