@@ -10,13 +10,50 @@ var vm = new Vue({
         myWin: [], //我方赢法的统计数组
         computerWin: [], //电脑赢法的统计数组
         over: false, //游戏是否结束
+        img: 'pic1', //背景图
+        Bg1: {
+            show: true,
+            hide: false
+        }, //控制背景显示
+        Bg2: {
+            hide: true,
+            show: false,
+        }, //控制背景隐藏
     },
     mounted() {
         // 当页面挂载完毕，初始化界面
-        this.init()
+        this.init();
+        this.changeImg();
     },
     methods: {
-        //初始化
+        // 背景图切换
+        changeImg() {
+            setInterval(() => {
+                console.log(this.Bg1.show)
+                if (this.Bg1.show) {
+                    console.log(11111111111)
+                    this.Bg1 = {
+                        show: false,
+                        hide: true
+                    };
+                    this.Bg2 = {
+                        show: true,
+                        hide: false
+                    };
+                } else {
+                    console.log(222222222222)
+                    this.Bg1 = {
+                        show: true,
+                        hide: false
+                    };
+                    this.Bg2 = {
+                        show: false,
+                        hide: true
+                    };
+                }
+            }, 8000)
+        },
+        //初始化画布
         init() {
             // 获取画布
             this.canvas = this.$refs.myCanvas;

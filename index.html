@@ -6,29 +6,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>五子棋</title>
-    <style>
-        #app {
-            text-align: center;
-        }
-        
-        #app canvas {
-            box-shadow: 2px 3px 4px 6px rgba(124, 84, 25, 0.466);
-            background: #E9B669;
-        }
-        
-        .btn {
-            margin-bottom: 20px;
-        }
-    </style>
+    <link rel="stylesheet" href="./css/index.css">
 </head>
 
 <body>
-    <div id="app">
-        <div class="btn">
-            <button type="button" @click="reStart">重新开始</button>
-            <button type="button">悔棋</button>
+    <div id="app" class="clearfix">
+        <div class="container">
+            <canvas @click="myChess" ref="myCanvas" width="600" height="600"></canvas>
+            <div class="btn">
+                <button type="button" @click="reStart">重新<br>开始</button>
+                <br>
+                <button type="button">悔棋</button>
+            </div>
         </div>
-        <canvas @click="myChess" ref="myCanvas" width="600" height="600"></canvas>
+
+        <ul class="bg">
+            <li :class="Bg1"></li>
+            <li :class="Bg2"></li>
+        </ul>
     </div>
 
     <script src="./js/vue.js"></script>
