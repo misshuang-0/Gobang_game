@@ -38,12 +38,15 @@ var vm = new Vue({
     },
     mounted() {
         // 当页面挂载完毕，初始化界面
-        this.init();
+        // this.init();
         // this.drawCheckerboard();
+
+        // 绘制dom棋盘背景
+        this.DrawChessBg();
+
+        // 背景切换
         this.changeImg();
 
-        // 背景音乐自动播放
-        this.$refs.myAudio.autoplay = true;
         // 设置音频音量
         this.$refs.myAudio.volume = 0.05; //音频音量
     },
@@ -228,7 +231,24 @@ var vm = new Vue({
                 this.computerWin[i] = 0;
             }
         },
-        // 绘制棋盘
+        // 绘制dom棋盘
+        DrawChessBg(){
+            // 获取棋盘背景dom元素
+            var domChessBg = this.$refs.domChessBg;
+            // 拼接字符串
+            var str = '<table cellspacing="0px"><tbody>';
+            for(let i = 0; i < 19;i ++){
+                str += '<tr>';
+                for(let j = 0;j < 19; j++){
+                    str += '<td class="chessAreaItem chessBgItem" id=' + i + '-' + j + '></td>';
+                }
+                str += '</tr>';
+            }
+            str += '</tody></table>';
+            // 将拼接好的字符串，赋值到棋盘背景dom元素中
+            domChessBg.innerHTML = str;
+        },
+        // 绘制canvas棋盘
         drawCheckerboard() {
             this.ctx2.strokeStyle = '#000';
             for (let i = 0; i < 20; i++) {
@@ -306,7 +326,6 @@ var vm = new Vue({
                         // 电脑方在此方法已经不可能赢，所以可以赋值一个不可能的数
                         this.computerWin[k] = 6;
                         // 如果该赢法已经到了5个，即5子相连成功
-                        console.log(this.myWin[k])
                         if (this.myWin[k] === 5) {
                             // console.log('我方五子')
                             // 弹出框提示：我方胜利
@@ -419,7 +438,7 @@ var vm = new Vue({
                     this.computerWin[k]++
                         this.myWin[k] = 6
                     if (this.computerWin[k] === 5) {
-                        console.log('电脑五子！！！！！！！！')
+                        // console.log('电脑五子！！！！！！！！')
                         alert('游戏结束，你输了！')
                         this.over = true;
                         this.reStart();

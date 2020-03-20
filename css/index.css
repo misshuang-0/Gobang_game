@@ -85,6 +85,8 @@ body {
     position: relative;
 }
 
+/* canvas样式开始 */
+
 .container .chessCanvas {
     position: absolute;
     left: 0;
@@ -164,3 +166,64 @@ canvas.noClick {
 .audioBtn .pause {
     background: url('../img/pause.png') 100%/100% no-repeat;
 }
+
+/* canvas样式结束 */
+
+
+/* dom棋盘样式开始 */
+
+/* 棋盘网格背景 */
+#chessBg {
+    width: 570px;
+    height: 570px;
+    border: 1px solid #000;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1;
+}
+#chessBg table{
+    width: 570px;
+    height: 570px;
+}
+#chessBg table tr:first-child td{
+    border-top: none;
+}
+#chessBg table tr td:first-child{
+    border-left: none;
+}
+#chessBg .chessBgItem{
+    border-top: 1px solid #000;
+    border-left: 1px solid #000;
+    height: auto;
+}
+
+/* 棋盘所有格子（棋子） */
+div.chessArea {
+    display: block;
+    width: 450px;
+    height: 450px;
+    padding: 0px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 5;
+}
+
+.chessArea table {
+    border-collapse: collapse;
+    width: 450px;
+    height: 450px;
+}
+
+.chessAreaItem {
+    width: 30px;
+    height: 30px;
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0px;
+    top: 0px;
+    bottom: 0px;
+}
+/* dom棋盘样式结束 */

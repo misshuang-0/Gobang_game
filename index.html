@@ -12,8 +12,13 @@
 <body>
     <div id="app">
         <div class="container clearfix">
-            <canvas class="gridCanvas" ref="gridCanvas" width="600" height="600"></canvas>
-            <canvas class="chessCanvas" @click="myChess" :class="canPlay" ref="myCanvas" width="600" height="600"></canvas>
+            <!-- <canvas class="gridCanvas" ref="gridCanvas" width="600" height="600"> -->
+                <!-- 当浏览器不支持canvas,则显示内部内容 -->
+                <div ref="domChessBg" id="chessBg"></div>
+            <!-- </canvas> -->
+            <canvas class="chessCanvas" @click="myChess" :class="canPlay" ref="myCanvas" width="600" height="600">
+                <div class="chessArea" id="chessArea"></div>
+            </canvas>
             <div class="btn">
                 <button class="start" type="button" @click="startGame">开始<br>游戏</button>
                 <br>
@@ -29,7 +34,7 @@
         </ul>
 
         <!-- 背景音乐 -->
-        <audio ref="myAudio" src="./audio/王昌元 - 梅花三弄 (古曲).mp3" autoplay loop>
+        <audio ref="myAudio" src="./audio/王昌元 - 梅花三弄 (古曲).mp3" loop>
             您的浏览器版本过低，请升级！
         </audio>
         <!-- 落子音效 -->
