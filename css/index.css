@@ -3,6 +3,20 @@
     margin: 0;
 }
 
+button {
+    border: none;
+    outline: none;
+    cursor: pointer;
+}
+
+.show {
+    display: block;
+}
+
+.hide {
+    display: none;
+}
+
 html {
     height: 100%;
 }
@@ -24,6 +38,9 @@ body {
     position: relative;
 }
 
+
+/* 页面背景图 */
+
 #app .bg li {
     position: absolute;
     width: 100%;
@@ -31,7 +48,7 @@ body {
     top: 0;
     left: 0;
     background: left/cover no-repeat;
-    animation: changeSize 7.5s forwards;
+    animation: changeSize 10s forwards;
     z-index: -1;
 }
 
@@ -61,42 +78,51 @@ body {
     background-image: url('../img/pic2.jpg');
 }
 
-.show {
-    display: block;
-}
-
-.hide {
-    display: none;
-}
-
 .container {
-    padding-top: 50px;
-    width: 900px;
+    width: 740px;
     margin: 0 auto;
+    margin-top: 50px;
+    position: relative;
 }
 
-.container canvas {
-    float: left;
+.container .chessCanvas {
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 5;
+}
+
+.container .gridCanvas {
+    position: absolute;
+    left: 0;
+    top: 0;
     box-shadow: 0px 3px 4px 6px rgba(136, 128, 59, 0.37);
     background: #E9B669;
+    z-index: 3;
+}
+
+canvas.noClick {
+    pointer-events: none;
 }
 
 .container .btn {
-    float: left;
-    width: 200px;
+    float: right;
+    width: 100px;
     margin-bottom: 20px;
-    margin-left: 30px;
+    /* margin-right: 60px; */
+}
+
+.btn .start {
+    background: rgb(201, 147, 67);
+    color: #fff;
 }
 
 .btn button {
-    border: none;
-    outline: none;
     margin-top: 30px;
     width: 80px;
     height: 80px;
     border-radius: 50%;
-    cursor: pointer;
-    box-shadow: 0px 2px 6px 4px rgba(109, 109, 108, 0.2);
+    box-shadow: 0px 2px 6px 4px rgba(109, 109, 108, 0.25);
     font-size: 15px;
     color: rgb(107, 107, 107);
     font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
@@ -108,4 +134,33 @@ body {
     transform: scale(1.2, 1.2);
     background: #4d4d4d;
     color: #fff;
+}
+
+
+/* 音频控制按钮 */
+
+.audioBtn {
+    position: absolute;
+    right: 40px;
+    top: 20px;
+}
+
+.audioBtn button {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    opacity: .4;
+    transition: opacity .5s;
+}
+
+.audioBtn button:hover {
+    opacity: 1;
+}
+
+.audioBtn .play {
+    background: url('../img/play.png') 100%/100% no-repeat;
+}
+
+.audioBtn .pause {
+    background: url('../img/pause.png') 100%/100% no-repeat;
 }

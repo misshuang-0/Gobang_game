@@ -10,13 +10,16 @@
 </head>
 
 <body>
-    <div id="app" class="clearfix">
-        <div class="container">
-            <canvas @click="myChess" ref="myCanvas" width="600" height="600"></canvas>
+    <div id="app">
+        <div class="container clearfix">
+            <canvas class="gridCanvas" ref="gridCanvas" width="600" height="600"></canvas>
+            <canvas class="chessCanvas" @click="myChess" :class="canPlay" ref="myCanvas" width="600" height="600"></canvas>
             <div class="btn">
+                <button class="start" type="button" @click="startGame">开始<br>游戏</button>
+                <br>
                 <button type="button" @click="reStart">重新<br>开始</button>
                 <br>
-                <button type="button">悔棋</button>
+                <button @click="regretGame" type="button">悔棋</button>
             </div>
         </div>
 
@@ -24,6 +27,23 @@
             <li :class="Bg1"></li>
             <li :class="Bg2"></li>
         </ul>
+
+        <!-- 背景音乐 -->
+        <audio ref="myAudio" src="./audio/王昌元 - 梅花三弄 (古曲).mp3" autoplay loop>
+            您的浏览器版本过低，请升级！
+        </audio>
+        <!-- 落子音效 -->
+        <audio ref="chessDown" src="./audio/bc6c2ac421385cfffbf64efab15a19f5.mp4">
+            您的浏览器版本过低，请升级！
+        </audio>
+        <!-- 右侧按钮音效 -->
+        <audio ref="btnAudio" src="./audio/水滴3.wav">
+            您的浏览器版本过低，请升级！
+        </audio>
+        <div class="audioBtn">
+            <button @click="playAudio" class="play" :class='myAudioPlay' type="button"></button>
+            <button @click="pauseAudio" class="pause" :class='myAudioPause' type="button"></button>
+        </div>
     </div>
 
     <script src="./js/vue.js"></script>
