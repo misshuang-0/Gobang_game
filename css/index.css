@@ -2,7 +2,7 @@
     padding: 0;
     margin: 0;
 }
-
+/* button清楚自带样式 */
 button {
     border: none;
     outline: none;
@@ -25,6 +25,7 @@ body {
     height: 100%;
 }
 
+/* 清除浮动 */
 .clearfix::after {
     content: '';
     display: block;
@@ -70,6 +71,8 @@ body {
     }
 }
 
+/* 背景图 */
+
 #app .bg li:first-child {
     background-image: url('../img/pic1.jpg');
 }
@@ -86,7 +89,7 @@ body {
 }
 
 /* canvas样式开始 */
-
+/* 棋子棋盘 */
 .container .chessCanvas {
     position: absolute;
     left: 0;
@@ -94,6 +97,7 @@ body {
     z-index: 5;
 }
 
+/* canvas 棋盘背景 */
 .container .gridCanvas {
     position: absolute;
     left: 0;
@@ -103,6 +107,7 @@ body {
     z-index: 2;
 }
 
+/* 禁止点击 */
 .noClick {
     pointer-events: none;
 }
@@ -111,7 +116,6 @@ body {
     float: right;
     width: 100px;
     margin-bottom: 20px;
-    /* margin-right: 60px; */
 }
 
 .btn .start {
@@ -172,7 +176,7 @@ body {
 
 /* dom棋盘样式开始 */
 
-/* 棋盘网格背景 */
+/* dom 棋盘网格背景 */
 .chessBg{
     width: 600px;
     height: 600px;
@@ -185,7 +189,6 @@ body {
 .domChessBg {
     width: 570px;
     height: 570px;
-    /* border: 1px solid #000; */
     position: absolute;
     top: 0;
     left: 0;
@@ -226,7 +229,6 @@ div.chessArea {
 
 .chessAreaItem {
     width: 30px;
-    /* height: 30px; */
     box-sizing: border-box;
     padding: 0;
     margin: 0px;
@@ -249,7 +251,7 @@ div.chessArea {
     left: 50px;
     animation: changePozi 8s infinite ease-out;
 }
-/* 云朵动效 */
+/* 云朵1动效 */
 @keyframes changePozi {
     0% {
         opacity: 1;
@@ -276,7 +278,7 @@ div.chessArea {
     right: 80px;
     animation: changePozi2 12s infinite ease-out;
 }
-/* 云朵动效 */
+/* 云朵2动效 */
 @keyframes changePozi2 {
     0% {
         opacity: 1;
@@ -300,7 +302,7 @@ div.chessArea {
     width: 600px;
     position: absolute;
     top: 20px;
-    left: 228px;
+    left: 400px;
     color: rgb(104, 70, 20);
     text-align: center;
     font-size: 15px;

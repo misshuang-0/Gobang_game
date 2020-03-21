@@ -39,7 +39,6 @@ var vm = new Vue({
         revertFlag: false, //是否不能悔棋
         myScore: [],    //记录我方的得分
         computerScore: [],    //记录电脑的得分
-        maxArr: [],     //保存最高分数的数组
         //---------------------------------------------
         // 以下是dom 数据
         chessTrList: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19],  //棋子网格，tr列表
@@ -71,6 +70,8 @@ var vm = new Vue({
                     }, 100);
                 })
             }
+
+            // 控制播放暂停按钮的显示和隐藏
             this.myAudioPause = {
                 show: true,
                 hide: false
@@ -92,7 +93,8 @@ var vm = new Vue({
                     }, this.$refs.myAudio.duration * 1000);
                 })
             }
-            // this.$refs.myAudio.pause();
+            
+            // 控制播放暂停按钮的显示和隐藏
             this.myAudioPause = {
                 hide: true,
                 show: false,
@@ -355,6 +357,8 @@ var vm = new Vue({
                 this.revertFlag = false; //落子完成，可以进行悔棋
 
                 // console.log('当前我方落子'+ this.i+this.j)
+                // console.log(this.wins);
+                // console.log(this.count);
 
                 // 更新我方赢法数组
                 for (let k = 0; k < this.count; k++) {
@@ -362,13 +366,9 @@ var vm = new Vue({
                     if (this.wins[this.i][this.j][k]) {
                         // 我方的该赢法数量加1
                         this.myWin[k]++;
-                        // 电脑方在此方法已经不可能赢，所以可以赋值一个不可能的数
-                        this.computerWin[k] = 10;
                         // 如果该赢法已经到了5个，即5子相连成功
-                        // console.log('我方棋子数量' + this.myWin[k])
                         if (this.myWin[k] == 5) {
                             // console.log('我方五子')
-                            // 弹出框提示：我方胜利
                             this.tips = '游戏结束，你赢了！';
                             // 游戏结束
                             this.over = true;
@@ -379,7 +379,6 @@ var vm = new Vue({
                         }
                     }
                 }
-                // console.log(this.over)
                 // 如果游戏还未结束
                 if (!this.over) {
                     // 转交给电脑下棋
@@ -462,12 +461,6 @@ var vm = new Vue({
                     }
                 }
             }
-            // console.log('max: '+ max)
-            // console.log('当前电脑方落子'+u+v)
-
-            // 将最高分数保存入最高分数的数组
-            this.maxArr.push(max);
-            // console.log(this.maxArr)
 
             // 赋值最高分数点的坐标给 当前电脑落子坐标
             this.u = u;
@@ -489,8 +482,6 @@ var vm = new Vue({
                 // 如果当前位置电脑存在赢法
                 if (this.wins[u][v][k]) {
                     this.computerWin[k]++;   //电脑的该赢法加1
-                    this.myWin[k] = 10;   //我方在该赢法不可能赢了
-                    // console.log('电脑方棋子数量' + this.computerWin[k])
                     if (this.computerWin[k] === 5) {
                         // console.log('电脑五子！！！！！！！！')
                         this.tips = '游戏结束，你输了！';
@@ -502,13 +493,14 @@ var vm = new Vue({
                     }
                 }
             }
+
             // 如果游戏未结束，计算我方下子
             if (!this.over) {
                 // console.log('转向我方')
                 this.me = !this.me
             }
         },
-        // 落子声音
+        // 声音公用方法
         chessVioce(audio) {
             var playPromise = audio.play();
             if (playPromise) {
@@ -554,28 +546,14 @@ var vm = new Vue({
 
                 for (let k = 0; k < this.count; k++) {
                     // 如果电脑在此处存在赢法，
-                    if (this.wins[u][v][k]) {
-                        this.computerWin[k]--; //该赢法减一
+                    if (this.wins[u][v][k]){
+                        this.computerWin[k]--;
                     }
                     // 如果我方在此处存在赢法，
                     if (this.wins[i][j][k]) {
-                        // 如果此处电脑存在1子-----待处理
-                        // if(this.computerWin[u][v][k] == 1){
-                        //     this.myWin -= 10;
-                        //     return;
-                        // }
-                        this.myWin[k]--; //该赢法减一
+                            this.myWin[k]--; //该赢法减一
                     }
                 }
-
-                // 权重更新，待处理
-                // if(this.maxArr.length > 1){
-                //     this.max = this.maxArr[this.maxArr.length - 1];
-                //     console.log(this.max)
-                // }else{
-                //     this.max = 0;
-                //     console.log(this.max)
-                // }
 
                 // 回到我方落子
                 this.me = true;

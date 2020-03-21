@@ -3,18 +3,18 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0,user-scalable=yes">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>五子棋</title>
+    <title>五子棋小游戏</title>
     <link rel="stylesheet" href="./css/index.css">
 </head>
 
 <body>
     <div id="app">
         <div class="container clearfix">
-            <!-- 棋盘网格+背景 -->
+            <!-- 棋盘网格背景 -->
             <!-- 模拟不兼容效果，将canvas注释了，显示 dom 元素的五子棋游戏 -->
-            <canvas class="gridCanvas" ref="gridCanvas" width="600" height="600">
+            <!-- <canvas class="gridCanvas" ref="gridCanvas" width="600" height="600"> -->
             <!-- 如果当浏览器不支持canvas,则显示内部内容 -->
             <div class="chessBg">
                 <div ref="domChessBg" class="domChessBg">
@@ -27,11 +27,11 @@
                     </table>
                 </div>
             </div>
-            </canvas>
+            <!-- </canvas> -->
 
             <!-- 棋子网格，游戏操作区域 -->
             <!-- 模拟不兼容效果，将canvas注释了，显示 dom 元素的五子棋游戏 -->
-            <canvas class="chessCanvas" @click="myChess" :class="canPlay" ref="myCanvas" width="600" height="600">
+            <!-- <canvas class="chessCanvas" @click="myChess" :class="canPlay" ref="myCanvas" width="600" height="600"> -->
             <div :class="canPlay" class="chessArea" ref="chessArea">
                 <table cellspacing="0px">
                     <tbody>
@@ -42,7 +42,7 @@
                     </tbody>
                 </table>
             </div>
-            </canvas>
+            <!-- </canvas> -->
 
             <!-- 按钮区 -->
             <div class="btn">
@@ -82,6 +82,7 @@
         <audio ref="btnAudio" src="./audio/水滴3.wav">
             您的浏览器版本过低，请升级！
         </audio>
+        <!-- 背景音乐播放按钮 -->
         <div class="audioBtn">
             <button @click="playAudio" class="play" :class='myAudioPlay' type="button"></button>
             <button @click="pauseAudio" class="pause" :class='myAudioPause' type="button"></button>
