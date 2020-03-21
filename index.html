@@ -12,13 +12,39 @@
 <body>
     <div id="app">
         <div class="container clearfix">
+            <!-- 棋盘网格+背景 -->
+            <!-- 模拟不兼容效果，将canvas注释了，显示 dom 元素的五子棋游戏 -->
             <!-- <canvas class="gridCanvas" ref="gridCanvas" width="600" height="600"> -->
-                <!-- 当浏览器不支持canvas,则显示内部内容 -->
-                <div ref="domChessBg" id="chessBg"></div>
+            <!-- 如果当浏览器不支持canvas,则显示内部内容 -->
+            <div class="chessBg">
+                <div ref="domChessBg" class="domChessBg">
+                    <table cellspacing="0px">
+                        <tbody>
+                            <tr v-for="(trItem,i) of chessBgTrList" :key="i">
+                                <td v-for="(tdItem,j) of chessBgTdList" :key="j" class="chessAreaItem chessBgItem"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
             <!-- </canvas> -->
-            <canvas class="chessCanvas" @click="myChess" :class="canPlay" ref="myCanvas" width="600" height="600">
-                <div class="chessArea" id="chessArea"></div>
-            </canvas>
+
+            <!-- 棋子网格，游戏操作区域 -->
+            <!-- 模拟不兼容效果，将canvas注释了，显示 dom 元素的五子棋游戏 -->
+            <!-- <canvas class="chessCanvas" @click="myChess" :class="canPlay" ref="myCanvas" width="600" height="600"> -->
+            <div :class="canPlay" class="chessArea" ref="chessArea">
+                <table cellspacing="0px">
+                    <tbody>
+                        <tr v-for="(trItem,i) of chessTrList" :key="i">
+                            <td v-for="(tdItem,j) of chessTdList" :key="j" @click="myChess(i,j)" :ref="`${i}-${j}`"
+                                class="chessAreaItem"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <!-- </canvas> -->
+
+            <!-- 按钮区 -->
             <div class="btn">
                 <button class="start" type="button" @click="startGame">开始<br>游戏</button>
                 <br>
@@ -28,13 +54,22 @@
             </div>
         </div>
 
+        <!-- 背景区 -->
         <ul class="bg">
             <li :class="Bg1"></li>
             <li :class="Bg2"></li>
         </ul>
 
+        <!-- 装饰-云朵 -->
+        <div class="cloud1">
+            <img src="./img/cloud1.png" alt="">
+        </div>
+        <div class="cloud2">
+            <img src="./img/cloud2.png" alt="">
+        </div>
+
         <!-- 背景音乐 -->
-        <audio ref="myAudio" src="./audio/王昌元 - 梅花三弄 (古曲).mp3" loop>
+        <audio ref="myAudio" src="./audio/王昌元 - 梅花三弄 (古曲).mp3" autoplay loop>
             您的浏览器版本过低，请升级！
         </audio>
         <!-- 落子音效 -->

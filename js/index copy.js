@@ -35,27 +35,27 @@ var vm = new Vue({
             show: false,
         }, //控制背景音乐隐藏
         revertFlag: false, //是否悔棋
-        //---------------------------------------------
         // 以下是dom 数据
-        chessTrList: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19],  //棋子网格，tr列表
-        chessTdList: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19],  //棋子网格，td列表
-        chessBgTrList: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18],  //棋盘背景，td列表
-        chessBgTdList: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18],  //棋盘背景，td列表
-        // clearBg:{
-        //     noBg: false,
-        // }
+        myChessStyle: {
+            black: false,
+            white: false,
+        },      //黑子还是白子
     },
     mounted() {
         // 当页面挂载完毕，初始化界面
-        this.init();
+        // this.init();
         // this.drawCheckerboard();
+
+        // 绘制dom棋盘背景
+        this.DrawChessBg();
+        // 绘制dom棋子网格
+        this.drawChessGame();
 
         // 背景切换
         this.changeImg();
 
         // 设置音频音量
         this.$refs.myAudio.volume = 0.05; //音频音量
-
     },
     methods: {
         // 播放背景音乐
@@ -137,21 +137,17 @@ var vm = new Vue({
         },
         //初始化画布
         init() {
-            // canvas 初始化
-            if(this.$refs.gridCanvas && this.$refs.myCanvas){
-                // 获取棋子画布
-                this.canvas = this.$refs.myCanvas;
-                // 获取棋子画笔
-                this.ctx = this.canvas.getContext('2d');
-                // 获取棋盘背景画布
-                this.gridCanvas = this.$refs.gridCanvas;
-                // 获取棋盘背景画笔
-                this.ctx2 = this.gridCanvas.getContext('2d');
+            // 获取棋子画布
+            this.canvas = this.$refs.myCanvas;
+            // 获取棋子画笔
+            this.ctx = this.canvas.getContext('2d');
+            // 获取棋子画布
+            this.gridCanvas = this.$refs.gridCanvas;
+            // 获取棋子画笔
+            this.ctx2 = this.gridCanvas.getContext('2d');
 
-                // 绘制 canvas 棋盘背景
-                this.drawCheckerboard();
-            }
-            
+            // 棋子棋盘初始化
+            this.drawCheckerboard();
             // 初始化棋子落子状态（清零）
             this.hasPieces();
             // 棋子赢法判断
@@ -159,11 +155,12 @@ var vm = new Vue({
         },
         //重置游戏
         reStart() {
-            // // console.log('重置游戏')
+            // console.log('重置游戏')
             // 水滴声音
             this.chessVioce(this.$refs.btnAudio);
 
-            // 重置数据
+            // 将画布清空
+            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
             this.me = true;
             this.piecesArr = [];
             this.wins = [];
@@ -172,13 +169,7 @@ var vm = new Vue({
             this.computerWin = [];
             this.over = false;
             // 棋盘初始化所有状态
-            if(this.$refs.myCanvas){    //如果兼容 canvas
-                // 将画布清空
-                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-                this.drawCheckerboard(); //重新绘制棋盘
-            }else{  //反之
-                window.location.reload()   //dom操作 清空所有棋子背景
-            }
+            this.drawCheckerboard(); //重新绘制棋盘
             this.hasPieces();
             this.winsMethods();
         },
@@ -247,14 +238,39 @@ var vm = new Vue({
                 this.computerWin[i] = 0;
             }
         },
-        // dom 绘制棋子样式
-        drawDomPieces(i,j,me){
-            // 黑子
-            if(me){
-                this.$refs[i+'-'+j][0].style.background = "url('./img/black.png') 50%/80% no-repeat";
-            }else{  //白子
-                this.$refs[i+'-'+j][0].style.background = "url('./img/white.png') 50%/80% no-repeat";
+        // 绘制dom棋盘
+        DrawChessBg(){
+            // 获取棋盘背景dom元素
+            var domChessBg = this.$refs.domChessBg;
+            // 拼接字符串
+            var str = '<table cellspacing="0px"><tbody>';
+            for(let i = 0; i < 19;i ++){
+                str += '<tr>';
+                for(let j = 0;j < 19; j++){
+                    str += '<td class="chessAreaItem chessBgItem" id=' + i + '-' + j + '></td>';
+                }
+                str += '</tr>';
             }
+            str += '</tody></table>';
+            // 将拼接好的字符串，赋值到棋盘背景dom元素中
+            domChessBg.innerHTML = str;
+        },
+        // 绘制dom棋子网格，游戏操作区域
+        drawChessGame(){
+            // 获取棋子网格dom元素
+            var chessArea = this.$refs.chessArea;
+            // 拼接字符串
+            var str = '<table cellspacing="0px"><tbody>';
+            for(let i = 0;i < 20;i ++){
+                str += '<tr>';
+                for(let j = 0;j < 20; j ++){
+                    str += '<td class="chessAreaItem" :class="myChessStyle" ref=' + i + '-' + j + '></td>';
+                }
+                str += '</tr>';
+            }
+            str += '</tbody></table>';
+            // 将拼接好的字符串，赋值到棋子网格dom元素中
+            chessArea.innerHTML = str;
         },
         // 绘制canvas棋盘
         drawCheckerboard() {
@@ -270,6 +286,20 @@ var vm = new Vue({
                 this.ctx2.moveTo(15, 15 + i * 30);
                 this.ctx2.lineTo(585, 15 + i * 30);
                 this.ctx2.stroke();
+            }
+        },
+        // dom 绘制棋子样式
+        drawDomPieces(me){
+            if(me){
+                this.myChessStyle = {
+                    black: true,
+                    white: false,
+                }
+            }else{
+                this.myChessStyle = {
+                    black: false,
+                    white: true,
+                }
             }
         },
         // canvas绘制棋子,参数x代表横向移动的距离，y代表纵向移动的举例
@@ -291,26 +321,26 @@ var vm = new Vue({
 
             this.ctx.fillStyle = grd;
             this.ctx.fill();
+
         },
         // 我方落子
-        myChess(i,j) {
-            // console.log(i,j)
+        myChess(e,ref) {
             // console.log('我方落子')
             // 落子声音
             this.chessVioce(this.$refs.chessDown);
 
             // 判断游戏是否结束
-            // console.log(this.me + ' ' + this.over)
+
             if (this.over) return;
             // 如果不是我方下棋，终止函数
             if (!this.me) return;
 
             // 如果兼容canvas画布
-            if(this.$refs.myCanvas){
+            if(this.ctx){
                 // canvas 获取棋子位置
                 // 获取鼠标点击位置
-                const mouseX = i.offsetX;
-                const mouseY = i.offsetY;
+                const mouseX = e.offsetX;
+                const mouseY = e.offsetY;
                 // 根据鼠标点击位置，判断棋子的位置
                 const x = Math.floor(mouseX / 30);
                 const y = Math.floor(mouseY / 30);
@@ -319,30 +349,23 @@ var vm = new Vue({
                 this.j = y;
             }else{  //如果不兼容，走dom
                 // dom 获取棋子位置
-                // console.log('获取dom棋子ref')
-                this.i = i;
-                this.j = j;
+                this.i = ref.split('-')[0];
+                this.j = ref.split('-')[1];
             }
 
             // 查询该位置是否已落子,如果该位置的值为0，则还没有落子
             if (this.piecesArr[this.i][this.j] == 0) {
                 // 将该位置的值改为1，表示该位置是我方落子
                 this.piecesArr[this.i][this.j] = 1;
-                // 如果兼容canvas
-                if(this.$refs.myCanvas){
-                    // canvas 向棋盘落子（绘制棋子）
-                    this.drawPieces(this.i, this.j, this.me);
-                }else{  //反之
-                    // dom 向棋盘落子（绘制棋子）
-                    this.drawDomPieces(this.i,this.j,this.me);
-                }
+                // 向棋盘落子（绘制棋子）
+                this.drawPieces(x, y, this.me);
 
                 this.revertFlag = false; //落子完成，可以进行悔棋
 
                 // 遍历赢法数组
                 for (let k = 0; k < this.count; k++) {
                     // 如果当前位置存在赢法
-                    if (this.wins[this.i][this.j][k]) {
+                    if (this.wins[x][y][k]) {
                         // 我方的该赢法数量加1
                         this.myWin[k]++;
                         // 电脑方在此方法已经不可能赢，所以可以赋值一个不可能的数
@@ -448,15 +471,8 @@ var vm = new Vue({
             this.u = u;
             this.v = v;
             // console.log(this.i + ' ' + this.j)
-            
-            // 如果兼容canvas
-            if(this.$refs.myCanvas){
-                // canvas 电脑落子
-                this.drawPieces(u, v, false);
-            }else{
-                // dom 电脑向棋盘落子
-                this.drawDomPieces(u,v,false);
-            }
+            // 电脑落子
+            this.drawPieces(u, v, false);
 
             // 该位置是计算机落子
             this.piecesArr[u][v] = 2;
@@ -486,20 +502,18 @@ var vm = new Vue({
             }
         },
         // 落子声音
-        chessVioce(audio) {
-            var playPromise = audio.play();
+        chessVioce(canvas) {
+            var playPromise = canvas.play();
             if (playPromise) {
                 // 音频加载成功
                 playPromise.then(() => {
                     setTimeout(() => {
                         // 播放音频
                         playPromise;
-                    }, audio.duration * 1000);
-                }).catch((e)=>{
-                     // 音频加载失败
+                    }, canvas.duration * 1000);
                 })
             }
-            audio.volume = 0.3;
+            canvas.volume = 0.3;
         },
         // 悔棋功能
         regretGame() {
@@ -518,13 +532,8 @@ var vm = new Vue({
             }
             // 判断游戏是否结束，是否可以悔棋
             if (!this.over && !this.revertFlag) {
-                if(this.$refs.myCanvas){    //如果兼容canvas
-                    this.ctx.clearRect(i * 30, j * 30, 30, 30);     //清除当前我方落子的棋子
-                    this.ctx.clearRect(u * 30, v * 30, 30, 30);     //清除当前电脑方落子的棋子
-                }else{
-                    this.$refs[i+'-'+j][0].style.background = 'none';
-                    this.$refs[u+'-'+v][0].style.background = 'none';
-                }
+                this.ctx.clearRect(i * 30, j * 30, 30, 30);
+                this.ctx.clearRect(u * 30, v * 30, 30, 30);
                 this.piecesArr[i][j] = 0; //将我方该位置的棋子清除
                 this.piecesArr[u][v] = 0; //将电脑方该位置的棋子清除
 

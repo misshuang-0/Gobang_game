@@ -48,7 +48,7 @@ body {
     top: 0;
     left: 0;
     background: left/cover no-repeat;
-    animation: changeSize 10s forwards;
+    animation: changeSize 10s;
     z-index: -1;
 }
 
@@ -100,10 +100,10 @@ body {
     top: 0;
     box-shadow: 0px 3px 4px 6px rgba(136, 128, 59, 0.37);
     background: #E9B669;
-    z-index: 3;
+    z-index: 2;
 }
 
-canvas.noClick {
+.noClick {
     pointer-events: none;
 }
 
@@ -173,37 +173,44 @@ canvas.noClick {
 /* dom棋盘样式开始 */
 
 /* 棋盘网格背景 */
-#chessBg {
-    width: 570px;
-    height: 570px;
-    border: 1px solid #000;
+.chessBg{
+    width: 600px;
+    height: 600px;
+    background: #E9B669;
+    box-shadow: 0px 3px 4px 6px rgba(136, 128, 59, 0.37);
     position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 1;
+    top: 0;
+    left: 0;
 }
-#chessBg table{
+.domChessBg {
+    width: 570px;
+    height: 570px;
+    /* border: 1px solid #000; */
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin: 15px;
+}
+.domChessBg table{
     width: 570px;
     height: 570px;
 }
-#chessBg table tr:first-child td{
-    border-top: none;
+.domChessBg table tr:last-child td{
+    border-bottom: 1.5px solid #4d4d4d;
 }
-#chessBg table tr td:first-child{
-    border-left: none;
+.domChessBg table tr td:last-child{
+    border-right: 1.5px solid #4d4d4d;
 }
-#chessBg .chessBgItem{
-    border-top: 1px solid #000;
-    border-left: 1px solid #000;
-    height: auto;
+.domChessBg .chessBgItem{
+    border-top: 1.5px solid #4d4d4d;
+    border-left: 1.5px solid #4d4d4d;
 }
 
 /* 棋盘所有格子（棋子） */
 div.chessArea {
     display: block;
-    width: 450px;
-    height: 450px;
+    width: 600px;
+    height: 600px;
     padding: 0px;
     position: absolute;
     top: 0;
@@ -213,17 +220,81 @@ div.chessArea {
 
 .chessArea table {
     border-collapse: collapse;
-    width: 450px;
-    height: 450px;
+    width: 600px;
+    height: 600px;
 }
 
 .chessAreaItem {
     width: 30px;
-    height: 30px;
+    /* height: 30px; */
     box-sizing: border-box;
     padding: 0;
     margin: 0px;
-    top: 0px;
-    bottom: 0px;
+}
+/* 棋子样式 */
+.black{
+    background: url('../img/black.png') 61% 47%/80% no-repeat;
+}
+.white{
+    background: url('../img/white.png') 61% 47%/80% no-repeat;
+}
+/* 清空棋子背景 */
+.noBg{
+    background: none !important;
 }
 /* dom棋盘样式结束 */
+
+/* 装饰-云朵 */
+.cloud1{
+    width: 300px;
+    height: 150px;
+    position: absolute;
+    top: 60px;
+    left: 50px;
+    animation: changePozi 8s infinite ease-out;
+}
+/* 云朵动效 */
+@keyframes changePozi {
+    0% {
+        opacity: 1;
+        margin-left: 30px;
+    }
+    50% {
+        opacity: 1;
+        margin-left: 130px;
+    }
+    100% {
+        opacity: 0.5;
+        margin-left: 0px;
+    }
+}
+.cloud1 img{
+    width: 100%;
+}
+
+.cloud2{
+    width: 400px;
+    height: 300px;
+    position: absolute;
+    bottom: -60px;
+    right: 80px;
+    animation: changePozi2 12s infinite ease-out;
+}
+/* 云朵动效 */
+@keyframes changePozi2 {
+    0% {
+        opacity: 1;
+        margin-right: 30px;
+    }
+    50% {
+        opacity: 1;
+        margin-right: 130px;
+    }
+    100% {
+        opacity: 0.5;
+        margin-right: 0px;
+    }
+}
+.cloud2 img{
+    width: 100%;
+}
