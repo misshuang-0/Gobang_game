@@ -238,10 +238,6 @@ div.chessArea {
 .white{
     background: url('../img/white.png') 61% 47%/80% no-repeat;
 }
-/* 清空棋子背景 */
-.noBg{
-    background: none !important;
-}
 /* dom棋盘样式结束 */
 
 /* 装饰-云朵 */
@@ -297,4 +293,15 @@ div.chessArea {
 }
 .cloud2 img{
     width: 100%;
+}
+
+/* 小提示 */
+.tips{
+    width: 600px;
+    position: absolute;
+    top: 20px;
+    left: 228px;
+    color: rgb(104, 70, 20);
+    text-align: center;
+    font-size: 15px;
 }

@@ -1,8 +1,10 @@
 var vm = new Vue({
     el: '#app',
     data: {
+        tips: '请点击开始游戏',   //提示内容
         canvas: {}, //画布
         ctx: {}, //画笔
+        newGame: true,
         i: 0, //当前我方位置的横坐标
         j: 0, //当前我方位置的纵坐标
         u: 0, //当前我方位置的横坐标
@@ -18,37 +20,36 @@ var vm = new Vue({
         Bg1: {
             show: true,
             hide: false
-        }, //控制背景显示
+        }, //控制背景1显示隐藏
         Bg2: {
             hide: true,
             show: false,
-        }, //控制背景隐藏
+        }, //控制背景2显示隐藏
         canPlay: {
-            noClick: true, //控制棋盘是否可以正常游戏
+            noClick: true, //控制棋盘是否可以正常落子
         },
         myAudioPause: {
             show: true,
             hide: false
-        }, //控制背景音乐显示
+        }, //控制背景音乐暂停按钮显示隐藏
         myAudioPlay: {
             hide: true,
             show: false,
-        }, //控制背景音乐隐藏
-        revertFlag: false, //是否悔棋
+        }, //控制背景音乐播放按钮显示隐藏
+        revertFlag: false, //是否不能悔棋
+        myScore: [],    //记录我方的得分
+        computerScore: [],    //记录电脑的得分
+        maxArr: [],     //保存最高分数的数组
         //---------------------------------------------
         // 以下是dom 数据
         chessTrList: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19],  //棋子网格，tr列表
         chessTdList: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19],  //棋子网格，td列表
         chessBgTrList: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18],  //棋盘背景，td列表
         chessBgTdList: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18],  //棋盘背景，td列表
-        // clearBg:{
-        //     noBg: false,
-        // }
     },
     mounted() {
         // 当页面挂载完毕，初始化界面
         this.init();
-        // this.drawCheckerboard();
 
         // 背景切换
         this.changeImg();
@@ -106,10 +107,15 @@ var vm = new Vue({
             // 水滴声音
             this.chessVioce(this.$refs.btnAudio);
 
-            // 游戏初始化
             this.canPlay = {
                 noClick: false,
             }; //让棋盘恢复可点击状态
+
+            // 如果不是新游戏
+            if(!this.newGame){
+                // 从新开始游戏
+                this.reStart();   
+            }
         },
         // 背景图切换
         changeImg() {
@@ -135,8 +141,11 @@ var vm = new Vue({
                 }
             }, 11000)
         },
-        //初始化画布
+        //初始化棋盘
         init() {
+            // 以下判断是否兼容canvas用的是模拟的方法，用ref查找棋盘的dom元素，如果存在即走canvas,不存在走dom
+            // 实际开发过程，用this.ctx即画笔是否存在来判断，如果不兼容canvas，获取不了画笔
+
             // canvas 初始化
             if(this.$refs.gridCanvas && this.$refs.myCanvas){
                 // 获取棋子画布
@@ -163,7 +172,12 @@ var vm = new Vue({
             // 水滴声音
             this.chessVioce(this.$refs.btnAudio);
 
+            this.canPlay = {
+                noClick: false,
+            }; //让棋盘恢复可点击状态
+            
             // 重置数据
+            this.tips = '请点击开始游戏';
             this.me = true;
             this.piecesArr = [];
             this.wins = [];
@@ -177,10 +191,14 @@ var vm = new Vue({
                 this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
                 this.drawCheckerboard(); //重新绘制棋盘
             }else{  //反之
-                window.location.reload()   //dom操作 清空所有棋子背景
+                for(var i = 0; i < 20;i++){
+                    for(var j = 0; j < 20;j ++){
+                        this.$refs[i + '-' + j][0].style.background = 'none';
+                    }
+                }   //dom操作 遍历所有棋子，清楚其背景图
             }
-            this.hasPieces();
-            this.winsMethods();
+            this.hasPieces();       // 初始化棋子落子状态（清零）
+            this.winsMethods();     // 棋子赢法判断
         },
         // 判断某个位置是否有落子
         hasPieces() {
@@ -202,18 +220,18 @@ var vm = new Vue({
                     this.wins[i][j] = [];
                 }
             }
-            // 横向赢法
+            // 横向赢法，扫描页面的所有横向的赢法
             // i代表横列，j代表纵列，k代表连续相连的棋子，循环5次
             for (let i = 0; i < 20; i++) {
-                for (let j = 0; j < 16; j++) {
+                for (let j = 0; j < 16; j++) {  // 当j到15时，已经到了棋盘边界值
                     for (let k = 0; k < 5; k++) {
                         this.wins[i][j + k][this.count] = true;
                     }
-                    // 得到一种赢的方法，赢法总数++
+                    // 赢法总数++
                     this.count++;
                 }
             }
-            // 纵向赢法
+            // 纵向赢法，扫描页面的所有纵向的赢法
             for (let i = 0; i < 20; i++) {
                 for (let j = 0; j < 16; j++) {
                     for (let k = 0; k < 5; k++) {
@@ -222,7 +240,7 @@ var vm = new Vue({
                     this.count++;
                 }
             }
-            // 斜线赢法
+            // 斜线赢法，扫描页面的所有正斜线的赢法
             for (let i = 0; i < 16; i++) {
                 for (let j = 0; j < 16; j++) {
                     for (let k = 0; k < 5; k++) {
@@ -231,7 +249,7 @@ var vm = new Vue({
                     this.count++;
                 }
             }
-            // 反斜线赢法
+            // 反斜线赢法，扫描页面的所有反斜线的赢法
             for (let i = 0; i < 16; i++) {
                 for (let j = 19; j > 3; j--) {
                     for (let k = 0; k < 5; k++) {
@@ -241,7 +259,7 @@ var vm = new Vue({
                 }
             }
             // console.log(this.count)
-            // 两方的赢法统计
+            // 两方的赢法统计，所有赢法数量清零
             for (let i = 0; i < this.count; i++) {
                 this.myWin[i] = 0;
                 this.computerWin[i] = 0;
@@ -272,7 +290,7 @@ var vm = new Vue({
                 this.ctx2.stroke();
             }
         },
-        // canvas绘制棋子,参数x代表横向移动的距离，y代表纵向移动的举例
+        // canvas绘制棋子,参数x代表横向移动的距离，y代表纵向移动的距离
         drawPieces(x, y, me) {
             this.ctx.beginPath();
             // 绘制的棋子
@@ -308,18 +326,14 @@ var vm = new Vue({
             // 如果兼容canvas画布
             if(this.$refs.myCanvas){
                 // canvas 获取棋子位置
-                // 获取鼠标点击位置
+                // 获取鼠标点击位置(i在此处是作为事件对象，event)
                 const mouseX = i.offsetX;
                 const mouseY = i.offsetY;
-                // 根据鼠标点击位置，判断棋子的位置
-                const x = Math.floor(mouseX / 30);
-                const y = Math.floor(mouseY / 30);
-                // 赋值当前我方落子坐标
-                this.i = x;
-                this.j = y;
-            }else{  //如果不兼容，走dom
+                // 根据鼠标点击位置，判断棋子的位置,赋值给当前我方落子坐标
+                this.i = Math.floor(mouseX / 30);
+                this.j = Math.floor(mouseY / 30);
+            }else{  //如果不兼容，走dom，i和j通过传参进来
                 // dom 获取棋子位置
-                // console.log('获取dom棋子ref')
                 this.i = i;
                 this.j = j;
             }
@@ -336,25 +350,28 @@ var vm = new Vue({
                     // dom 向棋盘落子（绘制棋子）
                     this.drawDomPieces(this.i,this.j,this.me);
                 }
+                this.newGame = false;   //已落子，不再是新开始的游戏
 
                 this.revertFlag = false; //落子完成，可以进行悔棋
 
-                // 遍历赢法数组
+                // console.log('当前我方落子'+ this.i+this.j)
+
+                // 更新我方赢法数组
                 for (let k = 0; k < this.count; k++) {
                     // 如果当前位置存在赢法
                     if (this.wins[this.i][this.j][k]) {
                         // 我方的该赢法数量加1
                         this.myWin[k]++;
                         // 电脑方在此方法已经不可能赢，所以可以赋值一个不可能的数
-                        this.computerWin[k] = 6;
+                        this.computerWin[k] = 10;
                         // 如果该赢法已经到了5个，即5子相连成功
-                        if (this.myWin[k] === 5) {
+                        // console.log('我方棋子数量' + this.myWin[k])
+                        if (this.myWin[k] == 5) {
                             // console.log('我方五子')
                             // 弹出框提示：我方胜利
-                            alert('游戏结束，你赢了！');
+                            this.tips = '游戏结束，你赢了！';
                             // 游戏结束
                             this.over = true;
-                            this.reStart();
                             this.canPlay = {
                                 noClick: true,
                             }; //让棋盘成为不可点击状态
@@ -374,81 +391,90 @@ var vm = new Vue({
         // 电脑落子
         computerChess() {
             // console.log('电脑落子')
-            var myScore = []; //记录我方的得分
-            var computerScore = []; //记录电脑的得分
-            var max = 0; //保存最高分数
+            var max = 0;
             var u = 0,
                 v = 0; //保存最高分数点的坐标
             // 得分初始化
             for (let i = 0; i < 20; i++) {
-                myScore[i] = [];
-                computerScore[i] = [];
+                this.myScore[i] = [];
+                this.computerScore[i] = [];
                 for (let j = 0; j < 20; j++) {
-                    myScore[i][j] = 0;
-                    computerScore[i][j] = 0;
+                    this.myScore[i][j] = 0;
+                    this.computerScore[i][j] = 0;
                 }
             }
             // 遍历棋盘
             for (let i = 0; i < 20; i++) {
                 for (let j = 0; j < 20; j++) {
                     // 如果当前位置还没有落子,进行分数计算
+                    // var kkk=0;
                     if (this.piecesArr[i][j] === 0) {
                         // 遍历赢法数组
                         for (let k = 0; k < this.count; k++) {
                             if (this.wins[i][j][k]) {
                                 // 判断黑子（玩家/我方）在该赢法已经有了几颗子
                                 if (this.myWin[k] === 1) {
-                                    myScore[i][j] += 200;
+                                    this.myScore[i][j] += 200;
                                 } else if (this.myWin[k] === 2) {
-                                    myScore[i][j] += 400;
+                                    this.myScore[i][j] += 400;
                                 } else if (this.myWin[k] === 3) {
-                                    myScore[i][j] += 2000;
+                                    this.myScore[i][j] += 2000;
                                 } else if (this.myWin[k] === 4) {
-                                    myScore[i][j] += 10000;
+                                    this.myScore[i][j] += 10000;
                                 }
                                 // 判断白子（电脑）在该赢法已经有了几颗子
                                 if (this.computerWin[k] === 1) {
-                                    computerScore[i][j] += 220;
+                                    this.computerScore[i][j] += 220;
                                 } else if (this.computerWin[k] === 2) {
-                                    computerScore[i][j] += 420;
+                                    this.computerScore[i][j] += 420;
                                 } else if (this.computerWin[k] === 3) {
-                                    computerScore[i][j] += 2100;
+                                    this.computerScore[i][j] += 2100;
                                 } else if (this.computerWin[k] === 4) {
-                                    computerScore[i][j] += 20000;
+                                    this.computerScore[i][j] += 20000;
                                 }
                             }
                         }
-                        // 与 myScore 比较分数
-                        if (myScore[i][j] > max) {
-                            max = myScore[i][j];
+                        // 遍历所有点，如果分数小于 this.myScore，则落子到当前位置
+                        if (this.myScore[i][j] > max) {
+                            max = this.myScore[i][j];
                             u = i;
                             v = j;
-                        } else if (myScore[i][j] === max) {
-                            if (computerScore[i][j] > computerScore[u][v]) {
+                        } else if (this.myScore[i][j] === max) { //如果相等，则与 this.computerScore 进行2次比较
+                            if (this.computerScore[i][j] > this.computerScore[u][v]) {
+                                // max = this.computerScore[i][j];
                                 u = i;
                                 v = j;
                             }
                         }
-                        // 与 computerScore 比较分数
-                        if (computerScore[i][j] > max) {
-                            max = computerScore[i][j];
+                        // 遍历所有点，如果分数小于 this.computerScore，则落子到当前位置
+                        if (this.computerScore[i][j] > max) {
+                            max = this.computerScore[i][j];
                             u = i;
                             v = j;
-                        } else if (computerScore[i][j] === max) {
-                            if (myScore[i][j] > myScore[u][v]) {
+                        } else if (this.computerScore[i][j] === max) {   //如果相等，则与 this.myScore 进行2次比较
+                            if (this.myScore[i][j] > this.myScore[u][v]) {
+                                // max = this.myScore[i][j];
                                 u = i;
                                 v = j;
                             }
                         }
+                        
                     }
                 }
             }
+            // console.log('max: '+ max)
+            // console.log('当前电脑方落子'+u+v)
 
-            // 赋值当前电脑落子坐标
+            // 将最高分数保存入最高分数的数组
+            this.maxArr.push(max);
+            // console.log(this.maxArr)
+
+            // 赋值最高分数点的坐标给 当前电脑落子坐标
             this.u = u;
             this.v = v;
-            // console.log(this.i + ' ' + this.j)
             
+            // 记录该位置是计算机落子
+            this.piecesArr[u][v] = 2;
             // 如果兼容canvas
             if(this.$refs.myCanvas){
                 // canvas 电脑落子
@@ -458,30 +484,27 @@ var vm = new Vue({
                 this.drawDomPieces(u,v,false);
             }
 
-            // 该位置是计算机落子
-            this.piecesArr[u][v] = 2;
-
-            //统计电脑的赢法
+            //更新电脑的赢法
             for (let k = 0; k < this.count; k++) {
+                // 如果当前位置电脑存在赢法
                 if (this.wins[u][v][k]) {
-                    this.computerWin[k]++
-                        this.myWin[k] = 6
+                    this.computerWin[k]++;   //电脑的该赢法加1
+                    this.myWin[k] = 10;   //我方在该赢法不可能赢了
+                    // console.log('电脑方棋子数量' + this.computerWin[k])
                     if (this.computerWin[k] === 5) {
                         // console.log('电脑五子！！！！！！！！')
-                        alert('游戏结束，你输了！')
+                        this.tips = '游戏结束，你输了！';
                         this.over = true;
-                        this.reStart();
                         this.canPlay = {
                             noClick: true,
                         }; //让棋盘成为不可点击状态
                         return;
-                        // console.log(this.over)
                     }
                 }
             }
             // 如果游戏未结束，计算我方下子
             if (!this.over) {
-                // console.log('转向电脑')
+                // console.log('转向我方')
                 this.me = !this.me
             }
         },
@@ -511,6 +534,7 @@ var vm = new Vue({
             const j = this.j;
             const u = this.u;
             const v = this.v;
+
             // 如果不是我方下子，不能悔棋
             if (!this.me) {
                 alert('不能悔棋');
@@ -533,13 +557,26 @@ var vm = new Vue({
                     if (this.wins[u][v][k]) {
                         this.computerWin[k]--; //该赢法减一
                     }
-                }
-                for (let k = 0; k < this.count; k++) {
                     // 如果我方在此处存在赢法，
                     if (this.wins[i][j][k]) {
+                        // 如果此处电脑存在1子-----待处理
+                        // if(this.computerWin[u][v][k] == 1){
+                        //     this.myWin -= 10;
+                        //     return;
+                        // }
                         this.myWin[k]--; //该赢法减一
                     }
                 }
+
+                // 权重更新，待处理
+                // if(this.maxArr.length > 1){
+                //     this.max = this.maxArr[this.maxArr.length - 1];
+                //     console.log(this.max)
+                // }else{
+                //     this.max = 0;
+                //     console.log(this.max)
+                // }
+
                 // 回到我方落子
                 this.me = true;
                 this.revertFlag = true; //悔棋完成，不能再悔棋
