@@ -81,16 +81,9 @@ var vm = new Vue({
 
         // 播放背景音乐
         playAudio() {
-            var playPromise = this.$refs.myAudio.play();
-            if (playPromise) {
-                // 音频加载成功
-                playPromise.then(() => {
-                    setTimeout(() => {
-                        // 播放音频
-                        playPromise;
-                    }, 100);
-                })
-            }
+            // 播放背景音乐
+            this.chessVioce(this.$refs.myAudio);
+            this.$refs.myAudio.volume = 0.05;
 
             // 控制播放暂停按钮的显示和隐藏
             this.myAudioPause = {
@@ -104,16 +97,8 @@ var vm = new Vue({
         },
         // 暂停背景音乐
         pauseAudio() {
-            var playPromise = this.$refs.myAudio.pause();
-            if (playPromise) {
-                // 音频加载成功
-                playPromise.then(() => {
-                    setTimeout(() => {
-                        // 播放音频
-                        playPromise;
-                    }, this.$refs.myAudio.duration * 1000);
-                })
-            }
+            // 暂停
+            this.$refs.myAudio.pause();
             
             // 控制播放暂停按钮的显示和隐藏
             this.myAudioPause = {
@@ -139,7 +124,7 @@ var vm = new Vue({
 
             // 如果不是新游戏
             if(!this.newGame){
-                // 从新开始游戏
+                // 清空棋盘，从新开始游戏
                 this.reStart();   
             }
         },
@@ -349,9 +334,9 @@ var vm = new Vue({
             // 判断游戏是否结束
             if (this.over) return;
             
-            if(!this.player){    //如果不是玩家对战
+            if(!this.player){    //如果不是玩家对战(即人机对战)
                 // 如果不是我方下棋，终止函数
-                if (!this.me) return;   
+                if (!this.me) return;
             }
 
             // 如果是我方下子(黑子方)
@@ -433,7 +418,7 @@ var vm = new Vue({
                 }
 
                 if(this.piecesArr[this.u][this.v] == 0){
-                    // 将该位置的值改为1，表示该位置是白子落子
+                    // 将该位置的值改为2，表示该位置是白子落子
                     this.piecesArr[this.u][this.v] = 2;
 
                     // 如果兼容canvas
@@ -508,11 +493,11 @@ var vm = new Vue({
                                 }
                                 // 判断白子（电脑）在该赢法已经有了几颗子
                                 if (this.computerWin[k] === 1) {
-                                    this.computerScore[i][j] += 220;
+                                    this.computerScore[i][j] += 240;
                                 } else if (this.computerWin[k] === 2) {
-                                    this.computerScore[i][j] += 420;
+                                    this.computerScore[i][j] += 440;
                                 } else if (this.computerWin[k] === 3) {
-                                    this.computerScore[i][j] += 2100;
+                                    this.computerScore[i][j] += 2200;
                                 } else if (this.computerWin[k] === 4) {
                                     this.computerScore[i][j] += 20000;
                                 }
@@ -523,9 +508,8 @@ var vm = new Vue({
                             max = this.myScore[i][j];
                             u = i;
                             v = j;
-                        } else if (this.myScore[i][j] === max) { //如果相等，则与 this.computerScore 进行2次比较
+                        } else if (this.myScore[i][j] === max) { //如果相等，则比较 this.computerScore 在两个位置的分数
                             if (this.computerScore[i][j] > this.computerScore[u][v]) {
-                                // max = this.computerScore[i][j];
                                 u = i;
                                 v = j;
                             }
@@ -535,9 +519,8 @@ var vm = new Vue({
                             max = this.computerScore[i][j];
                             u = i;
                             v = j;
-                        } else if (this.computerScore[i][j] === max) {   //如果相等，则与 this.myScore 进行2次比较
+                        } else if (this.computerScore[i][j] === max) {   //如果相等，则比较 this.myScore 在两个位置的分数
                             if (this.myScore[i][j] > this.myScore[u][v]) {
-                                // max = this.myScore[i][j];
                                 u = i;
                                 v = j;
                             }
@@ -606,7 +589,7 @@ var vm = new Vue({
             // 水滴声音
             this.chessVioce(this.$refs.btnAudio);
 
-            // 获取当前我方的棋子位置，电脑的棋子位置
+            // 获取当前双方的棋子位置
             const i = this.i;
             const j = this.j;
             const u = this.u;
@@ -622,6 +605,7 @@ var vm = new Vue({
                 }
             }
 
+            // 如果已经点击了悔棋，不能马上再点悔棋
             if((i == 0 && j == 0) || (u == 0 && v == 0)){
                 alert('您已悔过棋了，暂时不能悔棋了！^_^');
                 return;
@@ -650,7 +634,7 @@ var vm = new Vue({
                     }
                 }
 
-                // 将存储的上一步的坐标清零
+                // 将存储的上一步双方的坐标清零
                 this.i = 0, this.j = 0;
                 this.u = 0, this.v = 0;
 
