@@ -5,6 +5,7 @@ var vm = new Vue({
         canvas: {}, //画布
         ctx: {}, //画笔
         newGame: true,
+        dom: true,  //当前默认页面是 dom 
         player: false,   //判断是否是玩家对战
         i: 0, //当前我方位置上一步的横坐标
         j: 0, //当前我方位置上一步的纵坐标
@@ -47,6 +48,10 @@ var vm = new Vue({
         chessBgTrList: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18],  //棋盘背景，td列表
         chessBgTdList: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18],  //棋盘背景，td列表
     },
+    created(){
+        // 判断 type值是dom 还是canvas
+        this.getType();
+    },
     mounted() {
         // 当页面挂载完毕，初始化界面
         this.init();
@@ -59,6 +64,21 @@ var vm = new Vue({
 
     },
     methods: {
+        // 判断 type值是dom 还是canvas
+        getType(){
+            // 获取浏览器 url
+            var str = window.location.search;
+            // 找到 ‘=’ 的位置
+            var i = str.indexOf('=');
+            // 截取 '=' 以后的字符串
+            str = str.slice(i+1);
+            if(str == 'dom'){
+                this.dom = true;
+            }else {
+                this.dom = false;
+            }
+        },
+
         // 播放背景音乐
         playAudio() {
             var playPromise = this.$refs.myAudio.play();

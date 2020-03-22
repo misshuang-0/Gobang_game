@@ -15,11 +15,8 @@
             <!-- 文字提示 -->
             <div class="tips">{{tips}}</div>
 
-            <!-- 棋盘网格背景 -->
-            <!-- 模拟不兼容效果，将canvas注释了，显示 dom 元素的五子棋游戏 -->
-            <!-- <canvas class="gridCanvas" ref="gridCanvas" width="600" height="600"> -->
-            <!-- 如果当浏览器不支持canvas,则显示内部内容 -->
-            <div class="chessBg">
+            <!-- 棋盘网格背景,默认显示 dom 棋盘 -->
+            <div v-if="dom" class="chessBg">
                 <div ref="domChessBg" class="domChessBg">
                     <table cellspacing="0px">
                         <tbody>
@@ -30,12 +27,12 @@
                     </table>
                 </div>
             </div>
-            <!-- </canvas> -->
 
-            <!-- 棋子网格，游戏操作区域 -->
-            <!-- 模拟不兼容效果，将canvas注释了，显示 dom 元素的五子棋游戏 -->
-            <!-- <canvas class="chessCanvas" @click="myChess" :class="canPlay" ref="myCanvas" width="600" height="600"> -->
-            <div :class="canPlay" class="chessArea" ref="chessArea">
+            <!-- 如果兼容canvas,则显示canvas内容 -->
+            <canvas v-else class="gridCanvas" ref="gridCanvas" width="600" height="600"></canvas>
+
+            <!-- 棋子网格，游戏操作区域 默认显示 dom 棋盘 -->
+            <div v-if="dom" :class="canPlay" class="chessArea" ref="chessArea">
                 <table cellspacing="0px">
                     <tbody>
                         <tr v-for="(trItem,i) of chessTrList" :key="i">
@@ -45,7 +42,9 @@
                     </tbody>
                 </table>
             </div>
-            <!-- </canvas> -->
+            <!-- 如果兼容canvas,则显示canvas内容 -->
+            <canvas v-else class="chessCanvas" @click="myChess" :class="canPlay" ref="myCanvas" width="600"
+                height="600"></canvas>
 
             <!-- 按钮区 -->
             <div class="btn">
