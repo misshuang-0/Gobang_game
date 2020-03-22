@@ -12,6 +12,9 @@
 <body>
     <div id="app">
         <div class="container clearfix">
+            <!-- 文字提示 -->
+            <div class="tips">{{tips}}</div>
+
             <!-- 棋盘网格背景 -->
             <!-- 模拟不兼容效果，将canvas注释了，显示 dom 元素的五子棋游戏 -->
             <!-- <canvas class="gridCanvas" ref="gridCanvas" width="600" height="600"> -->
@@ -51,6 +54,8 @@
                 <button type="button" @click="reStart">重新<br>开始</button>
                 <br>
                 <button @click="regretGame" type="button">悔棋</button>
+                <br>
+                <button @click="playerGame" type="button">玩家对战</button>
             </div>
         </div>
 
@@ -67,8 +72,6 @@
         <div class="cloud2">
             <img src="./img/cloud2.png" alt="">
         </div>
-        <!-- 文字提示 -->
-        <div class="tips">{{tips}}</div>
 
         <!-- 背景音乐 -->
         <audio ref="myAudio" src="./audio/王昌元 - 梅花三弄 (古曲).mp3" autoplay loop>

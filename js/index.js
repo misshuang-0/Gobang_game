@@ -5,6 +5,7 @@ var vm = new Vue({
         canvas: {}, //画布
         ctx: {}, //画笔
         newGame: true,
+        player: false,   //判断是否是玩家对战
         i: 0, //当前我方位置的横坐标
         j: 0, //当前我方位置的纵坐标
         u: 0, //当前我方位置的横坐标
@@ -109,6 +110,9 @@ var vm = new Vue({
             // 水滴声音
             this.chessVioce(this.$refs.btnAudio);
 
+            this.player = false;    //恢复人机对战
+            this.tips = "当前模式：人机对战";
+
             this.canPlay = {
                 noClick: false,
             }; //让棋盘恢复可点击状态
@@ -171,15 +175,18 @@ var vm = new Vue({
         //重置游戏
         reStart() {
             // // console.log('重置游戏')
+
             // 水滴声音
             this.chessVioce(this.$refs.btnAudio);
+
+            this.player = false;    //恢复人机对战
+            this.tips = "当前模式：人机对战";
 
             this.canPlay = {
                 noClick: false,
             }; //让棋盘恢复可点击状态
             
             // 重置数据
-            this.tips = '请点击开始游戏';
             this.me = true;
             this.piecesArr = [];
             this.wins = [];
@@ -320,10 +327,12 @@ var vm = new Vue({
             this.chessVioce(this.$refs.chessDown);
 
             // 判断游戏是否结束
-            // console.log(this.me + ' ' + this.over)
             if (this.over) return;
-            // 如果不是我方下棋，终止函数
-            if (!this.me) return;
+            
+            if(!this.player){    //如果不是玩家对战
+                // 如果不是我方下棋，终止函数
+                if (!this.me) return;   
+            }
 
             // 如果兼容canvas画布
             if(this.$refs.myCanvas){
@@ -332,59 +341,99 @@ var vm = new Vue({
                 const mouseX = i.offsetX;
                 const mouseY = i.offsetY;
                 // 根据鼠标点击位置，判断棋子的位置,赋值给当前我方落子坐标
-                this.i = Math.floor(mouseX / 30);
-                this.j = Math.floor(mouseY / 30);
+                this.j = Math.floor(mouseX / 30);
+                this.i = Math.floor(mouseY / 30);
             }else{  //如果不兼容，走dom，i和j通过传参进来
                 // dom 获取棋子位置
                 this.i = i;
                 this.j = j;
             }
 
-            // 查询该位置是否已落子,如果该位置的值为0，则还没有落子
-            if (this.piecesArr[this.i][this.j] == 0) {
-                // 将该位置的值改为1，表示该位置是我方落子
-                this.piecesArr[this.i][this.j] = 1;
-                // 如果兼容canvas
-                if(this.$refs.myCanvas){
-                    // canvas 向棋盘落子（绘制棋子）
-                    this.drawPieces(this.i, this.j, this.me);
-                }else{  //反之
-                    // dom 向棋盘落子（绘制棋子）
-                    this.drawDomPieces(this.i,this.j,this.me);
+            // 如果是我方下子(黑子方)
+            if(this.me){
+                // 查询该位置是否已落子,如果该位置的值为0，则还没有落子
+                if (this.piecesArr[this.i][this.j] == 0) {
+                    // 将该位置的值改为1，表示该位置是我方落子(黑子)
+                    this.piecesArr[this.i][this.j] = 1;
+                    // 如果兼容canvas
+                    if(this.$refs.myCanvas){
+                        // canvas 向棋盘落子（绘制棋子）
+                        this.drawPieces(this.i, this.j, this.me);
+                    }else{  //反之
+                        // dom 向棋盘落子（绘制棋子）
+                        this.drawDomPieces(this.i,this.j,this.me);
+                    }
+                    this.newGame = false;   //已落子，不再是新开始的游戏
+
+                    this.revertFlag = false; //落子完成，可以进行悔棋
+
+                    // console.log('当前我方落子'+ this.i+this.j)
+
+                    // 更新我(黑子)方赢法数组
+                    for (let k = 0; k < this.count; k++) {
+                        // 如果当前位置存在赢法
+                        if (this.wins[this.i][this.j][k]) {
+                            // 我方的该赢法数量加1
+                            this.myWin[k]++;
+                            // 如果该赢法已经到了5个，即5子相连成功
+                            if (this.myWin[k] == 5) {
+                                // console.log('我方五子')
+                                this.tips = '游戏结束，黑子赢！';
+                                // 游戏结束
+                                this.over = true;
+                                this.canPlay = {
+                                    noClick: true,
+                                }; //让棋盘成为不可点击状态
+                                return;
+                            }
+                        }
+                    }
+                    
                 }
-                this.newGame = false;   //已落子，不再是新开始的游戏
+            }else{
+                if(this.piecesArr[this.i][this.j] == 0){
+                    // 将该位置的值改为1，表示该位置是白子落子
+                    this.piecesArr[this.i][this.j] = 2;
 
-                this.revertFlag = false; //落子完成，可以进行悔棋
+                    // 如果兼容canvas
+                    if(this.$refs.myCanvas){
+                        // canvas 向棋盘落子（绘制棋子）
+                        this.drawPieces(this.i, this.j, this.me);
+                    }else{  //反之
+                        // dom 向棋盘落子（绘制棋子）
+                        this.drawDomPieces(this.i,this.j,this.me);
+                    }
 
-                // console.log('当前我方落子'+ this.i+this.j)
-                // console.log(this.wins);
-                // console.log(this.count);
+                    this.newGame = false;   //已落子，不再是新开始的游戏
+                    this.revertFlag = false; //落子完成，可以进行悔棋
 
-                // 更新我方赢法数组
-                for (let k = 0; k < this.count; k++) {
-                    // 如果当前位置存在赢法
-                    if (this.wins[this.i][this.j][k]) {
-                        // 我方的该赢法数量加1
-                        this.myWin[k]++;
-                        // 如果该赢法已经到了5个，即5子相连成功
-                        if (this.myWin[k] == 5) {
-                            // console.log('我方五子')
-                            this.tips = '游戏结束，你赢了！';
-                            // 游戏结束
-                            this.over = true;
-                            this.canPlay = {
-                                noClick: true,
-                            }; //让棋盘成为不可点击状态
-                            return;
+                    // 更新白子方赢法数组
+                    for(let k = 0;k < this.count; k++){
+                        // 如果当前位置存在赢法
+                        if (this.wins[this.i][this.j][k]) {
+                            // 白子方的该赢法数量加1
+                            this.computerWin[k]++;
+                            // 如果该赢法已经到了5个，即5子相连成功
+                            if (this.computerWin[k] == 5) {
+                                // console.log('我方五子')
+                                this.tips = '游戏结束，白子赢！';
+                                // 游戏结束
+                                this.over = true;
+                                this.canPlay = {
+                                    noClick: true,
+                                }; //让棋盘成为不可点击状态
+                                return;
+                            }
                         }
                     }
                 }
-                // 如果游戏还未结束
-                if (!this.over) {
-                    // 转交给电脑下棋
-                    this.me = !this.me;
-                    this.computerChess();
-                }
+            }
+
+            this.me = !this.me; //改变持方
+            // 如果游戏还未结束并且不是玩家对战
+            if (!this.over && !this.player) {
+                // 转交给电脑下棋
+                this.computerChess();
             }
         },
         // 电脑落子
@@ -559,6 +608,24 @@ var vm = new Vue({
                 this.me = true;
                 this.revertFlag = true; //悔棋完成，不能再悔棋
             }
+        },
+        // 玩家对战
+        playerGame(){
+            // 水滴声音
+            this.chessVioce(this.$refs.btnAudio);
+
+            // 如果不是新游戏
+            if(!this.newGame){
+                // 从新开始游戏
+                this.reStart();   
+            }
+
+            this.player = true;     //玩家对战
+            this.tips = "当前模式：玩家对战";
+            
+            this.canPlay = {
+                noClick: false,
+            }; //让棋盘恢复可点击状态
         },
     }
 
