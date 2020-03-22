@@ -6,10 +6,10 @@ var vm = new Vue({
         ctx: {}, //画笔
         newGame: true,
         player: false,   //判断是否是玩家对战
-        i: 0, //当前我方位置的横坐标
-        j: 0, //当前我方位置的纵坐标
-        u: 0, //当前我方位置的横坐标
-        v: 0, //当前我方位置的纵坐标
+        i: 0, //当前我方位置上一步的横坐标
+        j: 0, //当前我方位置上一步的纵坐标
+        u: 0, //当前电脑方位置上一步的横坐标
+        v: 0, //当前电脑方位置上一步的纵坐标
         me: true, //是否是我，默认是
         piecesArr: [], //记录已走过的棋子位置
         wins: [], //赢法数组
@@ -334,23 +334,24 @@ var vm = new Vue({
                 if (!this.me) return;   
             }
 
-            // 如果兼容canvas画布
-            if(this.$refs.myCanvas){
-                // canvas 获取棋子位置
-                // 获取鼠标点击位置(i在此处是作为事件对象，event)
-                const mouseX = i.offsetX;
-                const mouseY = i.offsetY;
-                // 根据鼠标点击位置，判断棋子的位置,赋值给当前我方落子坐标
-                this.j = Math.floor(mouseX / 30);
-                this.i = Math.floor(mouseY / 30);
-            }else{  //如果不兼容，走dom，i和j通过传参进来
-                // dom 获取棋子位置
-                this.i = i;
-                this.j = j;
-            }
-
             // 如果是我方下子(黑子方)
             if(this.me){
+
+                // 如果兼容canvas画布
+                if(this.$refs.myCanvas){
+                    // canvas 获取棋子位置
+                    // 获取鼠标点击位置(i在此处是作为事件对象，event)
+                    var mouseX = i.offsetX;
+                    var mouseY = i.offsetY;
+                    // 根据鼠标点击位置，判断棋子的位置,赋值给当前我方落子坐标
+                    this.i = Math.floor(mouseX / 30);
+                    this.j = Math.floor(mouseY / 30);
+                }else{  //如果不兼容，走dom，i和j通过传参进来
+                    // dom 获取棋子位置
+                    this.i = i;
+                    this.j = j;
+                }
+
                 // 查询该位置是否已落子,如果该位置的值为0，则还没有落子
                 if (this.piecesArr[this.i][this.j] == 0) {
                     // 将该位置的值改为1，表示该位置是我方落子(黑子)
@@ -364,7 +365,6 @@ var vm = new Vue({
                         this.drawDomPieces(this.i,this.j,this.me);
                     }
                     this.newGame = false;   //已落子，不再是新开始的游戏
-
                     this.revertFlag = false; //落子完成，可以进行悔棋
 
                     // console.log('当前我方落子'+ this.i+this.j)
@@ -388,20 +388,41 @@ var vm = new Vue({
                             }
                         }
                     }
-                    
+
+                    this.me = !this.me; //改变持方
+                    // 如果游戏还未结束并且不是玩家对战
+                    if (!this.over && !this.player) {
+                        // 转交给电脑下棋
+                        this.computerChess();
+                    }
                 }
-            }else{
-                if(this.piecesArr[this.i][this.j] == 0){
+            }else{  //白子
+                // 如果兼容canvas画布
+                if(this.$refs.myCanvas){
+                    // canvas 获取棋子位置
+                    // 获取鼠标点击位置(i在此处是作为事件对象，event)
+                    var mouseX = i.offsetX;
+                    var mouseY = i.offsetY;
+                    // 根据鼠标点击位置，判断棋子的位置,赋值给当前我方落子坐标
+                    this.u = Math.floor(mouseX / 30);
+                    this.v = Math.floor(mouseY / 30);
+                }else{  //如果不兼容，走dom，i和j通过传参进来
+                    // dom 获取棋子位置
+                    this.u = i;
+                    this.v = j;
+                }
+
+                if(this.piecesArr[this.u][this.v] == 0){
                     // 将该位置的值改为1，表示该位置是白子落子
-                    this.piecesArr[this.i][this.j] = 2;
+                    this.piecesArr[this.u][this.v] = 2;
 
                     // 如果兼容canvas
                     if(this.$refs.myCanvas){
                         // canvas 向棋盘落子（绘制棋子）
-                        this.drawPieces(this.i, this.j, this.me);
+                        this.drawPieces(this.u, this.v, this.me);
                     }else{  //反之
                         // dom 向棋盘落子（绘制棋子）
-                        this.drawDomPieces(this.i,this.j,this.me);
+                        this.drawDomPieces(this.u,this.v,this.me);
                     }
 
                     this.newGame = false;   //已落子，不再是新开始的游戏
@@ -410,7 +431,7 @@ var vm = new Vue({
                     // 更新白子方赢法数组
                     for(let k = 0;k < this.count; k++){
                         // 如果当前位置存在赢法
-                        if (this.wins[this.i][this.j][k]) {
+                        if (this.wins[this.u][this.v][k]) {
                             // 白子方的该赢法数量加1
                             this.computerWin[k]++;
                             // 如果该赢法已经到了5个，即5子相连成功
@@ -426,15 +447,10 @@ var vm = new Vue({
                             }
                         }
                     }
+                    this.me = !this.me; //改变持方
                 }
             }
 
-            this.me = !this.me; //改变持方
-            // 如果游戏还未结束并且不是玩家对战
-            if (!this.over && !this.player) {
-                // 转交给电脑下棋
-                this.computerChess();
-            }
         },
         // 电脑落子
         computerChess() {
@@ -575,12 +591,22 @@ var vm = new Vue({
             const j = this.j;
             const u = this.u;
             const v = this.v;
+            // console.log(i,j,u,v)
 
-            // 如果不是我方下子，不能悔棋
-            if (!this.me) {
-                alert('不能悔棋');
+            // 如果不是玩家对战
+            if(!this.player){
+                // 如果不是我方下子，不能悔棋
+                if (!this.me) {
+                    alert('不能悔棋');
+                    return;
+                }
+            }
+
+            if((i == 0 && j == 0) || (u == 0 && v == 0)){
+                alert('您已悔过棋了，暂时不能悔棋了！^_^');
                 return;
             }
+
             // 判断游戏是否结束，是否可以悔棋
             if (!this.over && !this.revertFlag) {
                 if(this.$refs.myCanvas){    //如果兼容canvas
@@ -604,8 +630,14 @@ var vm = new Vue({
                     }
                 }
 
-                // 回到我方落子
-                this.me = true;
+                // 将存储的上一步的坐标清零
+                this.i = 0, this.j = 0;
+                this.u = 0, this.v = 0;
+
+                if(!this.player){    //如果不是玩家对战
+                    // 回到我方落子
+                    this.me = true;
+                }
                 this.revertFlag = true; //悔棋完成，不能再悔棋
             }
         },
