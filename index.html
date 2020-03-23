@@ -13,15 +13,18 @@
     <div id="app">
         <div class="container clearfix">
             <!-- 文字提示 -->
-            <div v-cloak class="tips">{{tips}}</div>
+            <div v-cloak class="tips">
+                <p>{{modelMsg}}</p>
+                <p>{{tips}}</p>
+            </div>
 
             <!-- 棋盘网格背景,默认显示 dom 棋盘 -->
             <div v-if="dom" class="chessBg">
                 <div ref="domChessBg" class="domChessBg">
                     <table cellspacing="0px">
                         <tbody>
-                            <tr v-for="(trItem,i) of chessBgTrList" :key="i">
-                                <td v-for="(tdItem,j) of chessBgTdList" :key="j" class="chessAreaItem chessBgItem"></td>
+                            <tr v-for="(trItem,j) of chessBgTrList" :key="j">
+                                <td v-for="(tdItem,i) of chessBgTdList" :key="i" class="chessAreaItem chessBgItem"></td>
                             </tr>
                         </tbody>
                     </table>
@@ -35,8 +38,8 @@
             <div v-if="dom" :class="canPlay" class="chessArea" ref="chessArea">
                 <table cellspacing="0px">
                     <tbody>
-                        <tr v-for="(trItem,i) of chessTrList" :key="i">
-                            <td v-for="(tdItem,j) of chessTdList" :key="j" @click="myChess(i,j)" :ref="`${i}-${j}`"
+                        <tr v-for="(trItem,j) of chessTrList" :key="j">
+                            <td v-for="(tdItem,i) of chessTdList" :key="i" @click="myChess(i,j)" :ref="`${i}-${j}`"
                                 class="chessAreaItem"></td>
                         </tr>
                     </tbody>
@@ -54,7 +57,8 @@
                 <br>
                 <button @click="regretGame" type="button">悔棋</button>
                 <br>
-                <button @click="playerGame" type="button">玩家对战</button>
+                <button @click="playerGame" type="button">玩家<br>对战</button>
+                <br>
             </div>
         </div>
 
@@ -76,7 +80,6 @@
         <audio ref="myAudio" src="./audio/王昌元 - 梅花三弄 (古曲).mp3" autoplay loop>
             您的浏览器版本过低，请升级！
         </audio>
-
         <!-- 落子音效 -->
         <audio ref="chessDown" src="./audio/bc6c2ac421385cfffbf64efab15a19f5.mp4">
             您的浏览器版本过低，请升级！
@@ -90,6 +93,9 @@
             <button @click="playAudio" class="play" :class='myAudioPlay' type="button"></button>
             <button @click="pauseAudio" class="pause" :class='myAudioPause' type="button"></button>
         </div>
+
+        <!-- 切换 canvas 和 dom -->
+        <button class="changeType" @click="changeType" type="button">切换模式</button>
     </div>
 
     <script src="./js/vue.js"></script>

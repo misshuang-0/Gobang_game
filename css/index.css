@@ -101,6 +101,50 @@ body {
     z-index: 5;
 }
 
+/* 音频控制按钮 */
+
+.audioBtn {
+    position: absolute;
+    right: 40px;
+    top: 20px;
+}
+
+.audioBtn button {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    opacity: .4;
+    transition: opacity .5s;
+}
+
+.audioBtn button:hover {
+    opacity: 1;
+}
+
+.audioBtn .play {
+    background: url('../img/play.png') 100%/100% no-repeat;
+}
+
+.audioBtn .pause {
+    background: url('../img/pause.png') 100%/100% no-repeat;
+}
+
+/* 切换模式 */
+.changeType{
+    width: 60px;
+    height: 26px;
+    border-radius: 8px;
+    position: absolute;
+    top: 66px;
+    right: 30px;
+    background: #accac5;
+    color: #fff;
+    font-size: 13px;
+}
+.changeType:hover{
+    background: #98bbb5;
+}
+
 /* canvas 棋盘背景 */
 .container .gridCanvas {
     position: absolute;
@@ -144,35 +188,6 @@ body {
     transform: scale(1.2, 1.2);
     background: #4d4d4d;
     color: #fff;
-}
-
-
-/* 音频控制按钮 */
-
-.audioBtn {
-    position: absolute;
-    right: 40px;
-    top: 20px;
-}
-
-.audioBtn button {
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    opacity: .4;
-    transition: opacity .5s;
-}
-
-.audioBtn button:hover {
-    opacity: 1;
-}
-
-.audioBtn .play {
-    background: url('../img/play.png') 100%/100% no-repeat;
-}
-
-.audioBtn .pause {
-    background: url('../img/pause.png') 100%/100% no-repeat;
 }
 
 /* canvas样式结束 */
@@ -310,4 +325,10 @@ div.chessArea {
     color: rgb(104, 70, 20);
     text-align: center;
     font-size: 15px;
+}
+.tips p:first-child{
+    float: left;
+}
+.tips p:last-child{
+    float: right;
 }

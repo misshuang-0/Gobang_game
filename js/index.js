@@ -5,6 +5,7 @@ var vm = new Vue({
         canvas: {}, //画布
         ctx: {}, //画笔
         newGame: true,
+        modelMsg: 'dom 模式',
         dom: true,  //当前默认页面是 dom 
         player: false,   //判断是否是玩家对战
         i: 0, //当前我方位置上一步的横坐标
@@ -50,7 +51,7 @@ var vm = new Vue({
     },
     created(){
         // 判断 type值是dom 还是canvas
-        this.getType();
+        // this.getType();
     },
     mounted() {
         // 当页面挂载完毕，初始化界面
@@ -65,17 +66,71 @@ var vm = new Vue({
     },
     methods: {
         // 判断 type值是dom 还是canvas
-        getType(){
-            // 获取浏览器 url
-            var str = window.location.search;
-            // 找到 ‘=’ 的位置
-            var i = str.indexOf('=');
-            // 截取 '=' 以后的字符串
-            str = str.slice(i+1);
-            if(str == 'dom'){
-                this.dom = true;
-            }else {
-                this.dom = false;
+        // getType(){
+        //     // 获取浏览器 url
+        //     var str = window.location.search;
+        //     // 找到 ‘=’ 的位置
+        //     var i = str.indexOf('=');
+        //     // 截取 '=' 以后的字符串
+        //     str = str.slice(i+1);
+        //     if(str == 'dom'){
+        //         this.dom = true;
+        //     }else {
+        //         this.dom = false;
+        //     }
+        // },
+        // 切换 canvas 和 dom 按钮
+        changeType(){
+            // 水滴声音
+            this.chessVioce(this.$refs.btnAudio);
+
+            // 切换模式
+            this.dom = !this.dom;
+            
+            // dom
+            if(this.dom){
+                this.modelMsg = 'dom 模式';
+                // this.$nextTick  将回调延迟到下次 DOM 更新循环之后执行。
+                this.$nextTick(()=>{
+                    // 绘制棋子
+                    for(let j = 0; j < 20;j ++){
+                        for(let i = 0; i < 20; i ++){
+                            // 黑子
+                            if(this.piecesArr[i][j] == 1){
+                                this.$refs[i+'-'+j][0].style.background = "url('./img/black.png') 50%/80% no-repeat";
+                            }else if(this.piecesArr[i][j] == 2){    //白子
+                                this.$refs[i+'-'+j][0].style.background = "url('./img/white.png') 50%/80% no-repeat";
+                            }
+                        }
+                    }
+                })
+            }else{  // canvas
+                this.modelMsg = 'canvas 模式';
+                this.$nextTick(()=>{
+                    // console.log(this.$refs.myCanvas)
+                    // 获取棋子画布
+                    this.canvas = this.$refs.myCanvas;
+                    // 获取棋子画笔
+                    this.ctx = this.canvas.getContext('2d');
+                    // 获取棋盘背景画布
+                    this.gridCanvas = this.$refs.gridCanvas;
+                    // 获取棋盘背景画笔
+                    this.ctx2 = this.gridCanvas.getContext('2d');
+
+                    // 绘制 canvas 棋盘背景
+                    this.drawCheckerboard();
+
+                    // 绘制棋子
+                    for(let j = 0; j < 19;j ++){
+                        for(let i = 0; i < 19; i ++){
+                            if(this.piecesArr[i][j] == 1){      //黑子
+                                this.drawPieces(i,j,true);
+                            }else if(this.piecesArr[i][j] == 2){       //白子
+                                this.drawPieces(i,j,false);
+                            }
+                        }
+                    }
+                })                
             }
         },
 
@@ -286,8 +341,10 @@ var vm = new Vue({
         },
         // dom 绘制棋子样式
         drawDomPieces(i,j,me){
+            
             // 黑子
             if(me){
+                // console.log('dom绘制棋子'+ i+j)
                 this.$refs[i+'-'+j][0].style.background = "url('./img/black.png') 50%/80% no-repeat";
             }else{  //白子
                 this.$refs[i+'-'+j][0].style.background = "url('./img/white.png') 50%/80% no-repeat";
@@ -316,7 +373,7 @@ var vm = new Vue({
             this.ctx.arc(15 + x * 30, 15 + y * 30, 13, 0, 2 * Math.PI);
             this.ctx.closePath();
             // 绘制棋子的光泽（径向渐变）
-            const grd = this.ctx.createRadialGradient(15 + x * 30 + 2, 15 + y * 30 - 2, 13, 15 + x * 30 + 2, 15 + y * 30 - 2, 0);
+            const grd = this.ctx.createRadialGradient(15 + x * 30 + 2, 15 + y * 30 - 2, 13, 15 + x * 30 + 2, 15 + y * 30 - 2, 2);
             // 判断是我方落子还是电脑落子，然后进行颜色渲染
             if (me) {
                 grd.addColorStop(0, '#0d0d0d');
@@ -360,6 +417,8 @@ var vm = new Vue({
                     // dom 获取棋子位置
                     this.i = i;
                     this.j = j;
+                    // console.log('mychess'+ i+j)
+
                 }
 
                 // 查询该位置是否已落子,如果该位置的值为0，则还没有落子
