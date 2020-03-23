@@ -13,7 +13,7 @@
     <div id="app">
         <div class="container clearfix">
             <!-- 文字提示 -->
-            <div class="tips">{{tips}}</div>
+            <div v-cloak class="tips">{{tips}}</div>
 
             <!-- 棋盘网格背景,默认显示 dom 棋盘 -->
             <div v-if="dom" class="chessBg">
@@ -76,6 +76,7 @@
         <audio ref="myAudio" src="./audio/王昌元 - 梅花三弄 (古曲).mp3" autoplay loop>
             您的浏览器版本过低，请升级！
         </audio>
+
         <!-- 落子音效 -->
         <audio ref="chessDown" src="./audio/bc6c2ac421385cfffbf64efab15a19f5.mp4">
             您的浏览器版本过低，请升级！

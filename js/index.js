@@ -112,6 +112,11 @@ var vm = new Vue({
         },
         // 点击开始游戏
         startGame() {
+            // 播放背景音乐
+            this.chessVioce(this.$refs.myAudio);
+            // 设置音频音量
+            this.$refs.myAudio.volume = 0.05; //音频音量
+
             // 水滴声音
             this.chessVioce(this.$refs.btnAudio);
 

@@ -2,6 +2,10 @@
     padding: 0;
     margin: 0;
 }
+/* 隐形斗篷 */
+[v-cloak]{
+    display: none;
+}
 /* button清楚自带样式 */
 button {
     border: none;
